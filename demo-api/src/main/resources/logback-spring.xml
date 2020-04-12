@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--scan 属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true。-->
+<!--scanPeriod 设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。当scan为true时，此属性生效。默认的时间间隔为1分钟。-->
+<!--debug 当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。-->
+<configuration debug="false" scan="true" scanPeriod="30 seconds">
+    <springProperty name="LOG_PATH" source="logging.path" defaultValue="/var/logs/fortune-tree/demo" />
+    <springProperty scope="context" name="logPath" source="logging.path"/>
+    <springProperty scope="context" name="logLevel" source="logging.level.root" defaultValue="WARN"/>
+    <property name="console.pattern" value="[%d{HH:mm:ss}] [%p] [%t] [%logger{43}.%L] %m%n "/>
+    <property name="log.pattern" value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%p] [%t] [%logger{43}.%L] - %m%n"/>
+    <!--contextName 标签 每个logger都关联到logger上下文，默认上下文名称为“default”。但可以使用<contextName>设置成其他名字，用于区分不同应用程序的记录。一旦设置，不能修改。-->
+    <contextName>blindbox_back</contextName>
+
+    <!-- 打印CONSOLE -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+        <encoder  charset="UTF-8">
+            <pattern>${console.pattern}</pattern>
+        </encoder>
+    </appender>
+    <!-- 只打印DEBUG日志 -->
+    <appender name="debugAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/debug.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/debug.log_%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder  charset="UTF-8">
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+    <!-- 只打印INFO日志 -->
+    <appender name="infoAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/info.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/info.log_%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder  charset="UTF-8">
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+    <!-- 只打印WARN日志 -->
+    <appender name="warnAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/warn.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/warn.log_%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder  charset="UTF-8">
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter"><!-- 只打印WARN日志 -->
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+    <!-- 只打印错误日志 -->
+    <appender name="errorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/error.log_%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder  charset="UTF-8">
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter"><!-- 只打印错误日志 -->
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+    <!-- 只打印 mybatis 日志 -->
+    <appender name="mybatisAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/mybatis.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/mybatis.log_%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder  charset="UTF-8">
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- 异步输出，异步的log片段必须在同步段后面，否则不起作用 -->
+    <appender name="FILE-INFO-ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+        <discardingThreshold>0</discardingThreshold>
+        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+        <queueSize>768</queueSize>
+        <!-- 添加附加的appender,最多只能添加一个 -->
+        <appender-ref ref="infoAppender"/>
+    </appender>
+    <appender name="FILE-WARN-ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <appender-ref ref="warnAppender"/>
+    </appender>
+    <appender name="FILE-ERROR-ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <appender-ref ref="errorAppender"/>
+    </appender>
+    <appender name="FILE-MYBATIS-ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>768</queueSize>
+        <appender-ref ref="mybatisAppender"/>
+    </appender>
+
+    <!--myibatis log configure-->
+    <logger name="com.apache.ibatis" level="DEBUG"/>
+    <logger name="com.ibatis.common.jdbc.SimpleDataSource" level="DEBUG" />
+    <logger name="com.ibatis.common.jdbc.ScriptRunner" level="DEBUG" />
+    <logger name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate" level="DEBUG" />
+    <logger name="java.sql.Connection" level="DEBUG"/>
+    <logger name="java.sql.Statement" level="DEBUG"/>
+    <logger name="java.sql.PreparedStatement" level="DEBUG"/>
+    <logger name="java.sql.ResultSet" level="DEBUG" />
+    <!-- SPRING -->
+    <logger name="org.springframework" level="INFO" />
+
+    <!-- 自定义业务日志范围及级别 dev环境-->
+    <springProfile name="dev">
+        <logger name="com" level="${logLevel}" additivity="false">
+            <appender-ref ref="console"/>
+            <appender-ref ref="FILE-INFO-ASYNC"/>
+            <appender-ref ref="FILE-WARN-ASYNC"/>
+            <appender-ref ref="FILE-ERROR-ASYNC"/>
+        </logger>
+        <logger name="com.**.core.**.dao" level="DEBUG" additivity="false">
+            <appender-ref ref="console"/>
+            <appender-ref ref="FILE-MYBATIS-ASYNC"/>
+            <appender-ref ref="FILE-ERROR-ASYNC"/>
+        </logger>
+        <logger name="com.**.core.mapper" level="DEBUG" additivity="false">
+            <appender-ref ref="console"/>
+            <appender-ref ref="FILE-MYBATIS-ASYNC"/>
+            <appender-ref ref="FILE-ERROR-ASYNC"/>
+        </logger>
+    </springProfile>
+
+    <!-- 自定义业务日志范围及级别 prod,test环境-->
+    <springProfile name="prod,test">
+        <logger name="com" level="${logLevel}" additivity="false">
+            <appender-ref ref="FILE-INFO-ASYNC"/>
+            <appender-ref ref="FILE-WARN-ASYNC"/>
+            <appender-ref ref="FILE-ERROR-ASYNC"/>
+        </logger>
+        <logger name="com.**.core.**.dao" level="DEBUG" additivity="false">
+            <appender-ref ref="FILE-MYBATIS-ASYNC"/>
+            <appender-ref ref="FILE-ERROR-ASYNC"/>
+        </logger>
+        <logger name="com.**.core.mapper" level="DEBUG" additivity="false">
+            <appender-ref ref="FILE-MYBATIS-ASYNC"/>
+            <appender-ref ref="FILE-ERROR-ASYNC"/>
+        </logger>
+    </springProfile>
+
+
+    <!-- ROOT 日志级别 -->
+    <springProfile name="dev">
+        <root level="${logLevel}">
+            <appender-ref ref="console"/>
+            <appender-ref ref="FILE-INFO-ASYNC"/>
+            <appender-ref ref="FILE-WARN-ASYNC"/>
+            <appender-ref ref="FILE-ERROR-ASYNC"/>
+            <appender-ref ref="FILE-MYBATIS-ASYNC"/>
+        </root>
+    </springProfile>
+    <springProfile name="test">
+        <root level="${logLevel}">
+            <appender-ref ref="FILE-INFO-ASYNC"/>
+            <appender-ref ref="FILE-WARN-ASYNC"/>
+            <appender-ref ref="FILE-ERROR-ASYNC"/>
+            <appender-ref ref="FILE-MYBATIS-ASYNC"/>
+        </root>
+    </springProfile>
+    <springProfile name="prod">
+        <root level="${logLevel}">
+            <appender-ref ref="infoAppender"/>
+            <appender-ref ref="warnAppender"/>
+            <appender-ref ref="errorAppender"/>
+            <appender-ref ref="FILE-MYBATIS-ASYNC"/>
+        </root>
+    </springProfile>
+
+</configuration>
