@@ -25,18 +25,6 @@ public class Jasypt {
 //        String password = textEncryptor.encrypt("root123");
 //        System.out.println("username:"+username);
 //        System.out.println("password:"+password);
-        System.out.println(textEncryptor.encrypt("abc#123"));
-        System.out.println("*************************************");
-        System.out.println(textEncryptor.encrypt("LTAIxZ4qmHJ9hWOs"));
-        System.out.println(textEncryptor.encrypt("dSyb5GvztwwPghCL9O85E1c4Cx7w3p"));
-        System.out.println("*************************************");
-        System.out.println(textEncryptor.encrypt("PrlB84ChJ7"));
-//        System.out.println(textEncryptor.encrypt("root"));
-//        System.out.println(textEncryptor.encrypt("root"));
-//        System.out.println(textEncryptor.encrypt("root"));
-//        System.out.println(textEncryptor.encrypt("root"));
-//        System.out.println(textEncryptor.encrypt("root"));
-//        System.out.println(textEncryptor.encrypt("root"));
 
 
     }
